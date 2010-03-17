@@ -145,8 +145,26 @@ EOS
     @table.render
   end
 
+  it "only performs standard field value extraction for custom body cells when asked" do
+    datum = mock('datum')
+    datum.should_receive('custom_field_a')
+    datum.should_not_receive('custom_field_b')
+
+    @table = Table.new
+    @table.columns = [ "A", :custom_field_a, "B", :custom_field_b ]
+    @table.data = [datum]
+    @table.to_render_body_cell_for(:custom_field_a) do |context,cell|
+      context.field_value
+    end
+    @table.to_render_body_cell_for(:custom_field_b) do |context,cell|
+    end
+
+    @table.render
+  end
+
+  it "does not escape html provided by custom renderers"
+
   it 'should allow customization of html attributes for header cells'
   it 'should allow customization of html attributes for body cells'
 
-  it 'should have option to pretty print output'
 end

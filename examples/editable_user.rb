@@ -18,7 +18,8 @@ table = Table.new
 table.columns = [ 
   "Name", :name,
   "Age", :age,
-  "Gender", :sex
+  "Gender", :sex,
+  "Edit", :edit
 ]
 table.data = users
 table.to_render_body_cell_for(:sex) do |context,cell|
@@ -30,6 +31,9 @@ table.to_render_body_cell_for(:sex) do |context,cell|
   else
     "Unknown"
   end
+end
+table.to_render_body_cell_for(:edit) do |context,cell|
+  cell.content = "<a href='#{edit_user_path(context.datum)}'>Edit this user</a>"
 end
 
 output = table.render
