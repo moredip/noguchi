@@ -9,6 +9,9 @@ class Table
     @fields = []
     @columns = {}
     @data = []
+    to_get_field_from_datum do |datum,field|
+      datum.send(field)
+    end
   end
 
   def render
@@ -25,6 +28,10 @@ class Table
     @fields.zip(header_labels) do |field,label|
       @columns[field] = { :header_label => label }
     end
+  end
+
+  def to_get_field_from_datum(&field_extraction_proc)
+    @field_extraction_proc = field_extraction_proc
   end
   
   private
@@ -52,7 +59,7 @@ class Table
   end
 
   def render_cell(datum,field,h)
-    h.td( datum.send(field) )
+    h.td( @field_extraction_proc.call(datum,field) )
   end
 
   def break_columns_into_header_and_field_names(columns)

@@ -14,6 +14,10 @@ describe 'Noguchi' do
     doc.write( out='', 0 )
     out.gsub( "\n", '' ).gsub( /^\s+/, '' )
   end
+
+  def setup_standard_columns 
+    @table.columns = [ "name", :name, "age", :age ]
+  end
   
   it "should render an empty table correctly" do
     @table = Table.new
@@ -43,12 +47,11 @@ EOS
 
   it "should render cell rows correctly" do
     @table = Table.new
-    @table.columns = [ "name", :name, "age", :age ]
+    setup_standard_columns
     @table.data = [
       User.new( 'dave', 12 ),
       User.new( 'bob', 15 )
     ]
-
 
     verify_render <<-EOS
       <table>
@@ -58,6 +61,30 @@ EOS
         <tbody>
           <tr><td>dave</td><td>12</td></tr>
           <tr><td>bob</td><td>15</td></tr>
+        </tbody>
+      </table>
+EOS
+  end
+
+  it "should use supplied proc to extract field value from datum" do
+    @table = Table.new
+    setup_standard_columns
+    @table.data = [
+      User.new( 'dave', 12 ),
+      User.new( 'bob', 15 )
+    ]
+    @table.to_get_field_from_datum do |datum,field|
+      "#{field} for #{datum.name}"
+    end
+    
+    verify_render <<-EOS
+      <table>
+        <thead><tr>
+          <td>name</td><td>age</td>
+        </tr></thead>
+        <tbody>
+          <tr><td>name for dave</td><td>age for dave</td></tr>
+          <tr><td>name for bob</td><td>age for bob</td></tr>
         </tbody>
       </table>
 EOS
