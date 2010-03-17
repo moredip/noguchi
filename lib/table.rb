@@ -3,17 +3,19 @@ require 'builder'
 
 class Table
 
+  attr_writer :data
+
   def initialize
     @fields = []
     @columns = {}
+    @data = []
   end
 
   def render
     h = Builder::XmlMarkup.new
     h.table {
       render_header(h)
-      h.tbody {
-      }
+      render_body(h)
     }
   end
 
@@ -35,6 +37,22 @@ class Table
           end
         }
       }
+  end
+
+  def render_body(h)
+      h.tbody {
+        @data.each do |datum|
+          h.tr {
+            @fields.each do |field|
+              render_cell(datum,field,h)
+            end
+          }
+        end
+      }
+  end
+
+  def render_cell(datum,field,h)
+    h.td( datum.send(field) )
   end
 
   def break_columns_into_header_and_field_names(columns)
