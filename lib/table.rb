@@ -1,6 +1,9 @@
 require 'rubygems'
 require 'builder'
 
+require 'cell_output'
+require 'body_cell_render_context'
+
 class Table
 
   attr_writer :data
@@ -10,6 +13,7 @@ class Table
     @columns = {}
     @data = []
     @custom_header_renderers = {}
+    @custom_body_renderers = {}
     to_get_field_from_datum do |datum,field|
       datum.send(field)
     end
@@ -39,6 +43,10 @@ class Table
     @custom_header_renderers[field] = proc
   end
   
+  def to_render_body_cell_for( field, &proc )
+    @custom_body_renderers[field] = proc
+  end
+
   private
 
   def render_header
@@ -68,15 +76,23 @@ class Table
         @data.each do |datum|
           @h.tr {
             @fields.each do |field|
-              render_cell(datum,field)
+              render_body_cell(datum,field)
             end
           }
         end
       }
   end
 
-  def render_cell(datum,field)
-    @h.td( @field_extraction_proc.call(datum,field) )
+  def render_body_cell(datum,field)
+    field_value = @field_extraction_proc.call(datum,field) 
+    if @custom_body_renderers.has_key?(field)
+      context = BodyCellRenderContext.new( field_value )
+      cell_output = CellOutput.new
+      @custom_body_renderers[field].call( context, cell_output )
+      cell_output.render_to(@h)
+    else
+      @h.td( field_value )
+    end
   end
 
   def break_columns_into_header_and_field_names(columns)

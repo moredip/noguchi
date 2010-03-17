@@ -19,6 +19,13 @@ describe 'Noguchi' do
   def setup_standard_columns 
     @table.columns = [ "name", :name, "age", :age ]
   end
+
+  def setup_standard_data
+    @table.data = [
+      User.new( 'dave', 12 ),
+      User.new( 'bob', 15 )
+    ]
+  end
   
   it "should render an empty table correctly" do
     @table = Table.new
@@ -49,10 +56,7 @@ EOS
   it "should render cell rows correctly" do
     @table = Table.new
     setup_standard_columns
-    @table.data = [
-      User.new( 'dave', 12 ),
-      User.new( 'bob', 15 )
-    ]
+    setup_standard_data
 
     verify_render <<-EOS
       <table>
@@ -70,10 +74,7 @@ EOS
   it "should support using a custom proc to extract field value from datum" do
     @table = Table.new
     setup_standard_columns
-    @table.data = [
-      User.new( 'dave', 12 ),
-      User.new( 'bob', 15 )
-    ]
+    setup_standard_data
     @table.to_get_field_from_datum do |datum,field|
       "#{field} for #{datum.name}"
     end
@@ -109,7 +110,27 @@ EOS
 EOS
   end
 
-  it 'should allow a custom body cell renderer for a specific field'
+  it 'should allow a custom body cell renderer for a specific field' do
+    @table = Table.new
+    setup_standard_columns
+    setup_standard_data
+    @table.to_render_body_cell_for(:name) do |context,cell|
+      cell.content = context.field_value.upcase + "!"
+      cell.attributes['class'] = 'italic'
+    end
+
+    verify_render <<-EOS
+      <table>
+        <thead><tr>
+          <td>name</td><td>age</td>
+        </tr></thead>
+        <tbody>
+          <tr><td class='italic'>DAVE!</td><td>12</td></tr>
+          <tr><td class='italic'>BOB!</td><td>15</td></tr>
+        </tbody>
+      </table>
+EOS
+  end
 
   it 'should allow customization of html attributes for header cells'
   it 'should allow customization of html attributes for body cells'
