@@ -3,6 +3,7 @@ require 'builder'
 
 require 'cell_output'
 
+module Noguchi
 describe CellOutput do
 
   before :each do
@@ -35,4 +36,5 @@ describe CellOutput do
     xml_should_look_like %q|<td><i>foo</i></td>|
   end
 
+end
 end

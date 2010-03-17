@@ -2,6 +2,8 @@ require File.dirname(__FILE__)+'/spec_helper.rb'
 require 'table'
 require 'rexml/document'
 
+module Noguchi
+
 describe 'Noguchi' do
   User = Struct.new( :name, :age )
 
@@ -182,5 +184,7 @@ EOS
 
   it 'should allow customization of html attributes for header cells'
   it 'should allow customization of html attributes for body cells'
+
+end
 
 end

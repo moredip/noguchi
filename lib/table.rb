@@ -4,6 +4,7 @@ require 'builder'
 require 'cell_output'
 require 'body_cell_render_context'
 
+module Noguchi
 class Table
 
   attr_writer :data
@@ -105,4 +106,5 @@ class Table
     end
     [header_names,field_names]
   end
+end
 end

@@ -1,3 +1,4 @@
+module Noguchi
 class BodyCellRenderContext
   attr_reader :datum, :field
 
@@ -10,4 +11,5 @@ class BodyCellRenderContext
   def field_value
     @field_value ||= @field_value_extraction_proc.call( @datum, @field )
   end
+end
 end

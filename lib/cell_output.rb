@@ -1,3 +1,4 @@
+module Noguchi
 class CellOutput
   attr_writer :raw_content
   attr_reader :attributes
@@ -17,4 +18,5 @@ class CellOutput
       h << @raw_content
     end
   end
+end
 end
