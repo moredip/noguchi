@@ -73,6 +73,23 @@ EOS
 EOS
   end
 
+  it 'should fall back to using subscript operator to extract field value from datum if the datum does not respond to the required method' do
+    @table = Table.new
+    @table.add_field( :a_hash_key )
+    @table.data = [ {:a_hash_key => 'hash_value'} ]
+    
+    verify_render <<-EOS
+      <table>
+        <thead><tr>
+          <th></th>
+        </tr></thead>
+        <tbody>
+          <tr><td>hash_value</td></tr>
+        </tbody>
+      </table>
+EOS
+  end
+
   it "should support using a custom proc to extract field value from datum" do
     @table = Table.new
     setup_standard_columns

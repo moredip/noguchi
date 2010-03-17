@@ -15,7 +15,11 @@ class Table
     @custom_header_renderers = {}
     @custom_body_renderers = {}
     to_get_field_from_datum do |datum,field|
-      datum.send(field).to_s 
+      if datum.respond_to?( field )
+        datum.send(field).to_s 
+      else
+        datum[field].to_s
+      end
     end
   end
 
@@ -39,6 +43,8 @@ class Table
   end
 
   def add_field(field,column_options = {})
+    column_options = {:label => ''}.merge( column_options )
+
     @fields << field 
     @columns[field] = column_options
 
