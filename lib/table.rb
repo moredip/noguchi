@@ -1,8 +1,7 @@
-require 'rubygems'
 require 'builder'
 
-require 'cell_output'
-require 'body_cell_render_context'
+require File.join File.dirname(__FILE__), 'cell_output'
+require File.join File.dirname(__FILE__), 'body_cell_render_context'
 
 module Noguchi
 class Table

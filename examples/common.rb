@@ -1,2 +1,2 @@
-$: << File.join( File.dirname(__FILE__), '..', 'lib' )
-require 'table'
+require 'rubygems'
+require 'noguchi'

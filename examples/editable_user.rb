@@ -14,7 +14,7 @@ users = [
   User.new( 3, "Hank", 27, :M )
 ]
 
-table = Table.new
+table = Noguchi.table
 table.columns = [ 
   "Name", :name,
   "Age", :age,
