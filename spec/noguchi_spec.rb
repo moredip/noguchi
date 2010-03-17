@@ -32,9 +32,9 @@ describe 'Noguchi' do
     verify_render <<-EOS
       <table>
         <thead>
-          <tr/>
+          <tr> </tr>
         </thead>
-        <tbody/>
+        <tbody> </tbody>
       </table>
 EOS
   end
@@ -48,7 +48,7 @@ EOS
         <thead><tr>
           <td>Their name</td><td>Their age</td>
         </tr></thead>
-        <tbody/>
+        <tbody> </tbody>
       </table>
 EOS
   end
@@ -105,7 +105,7 @@ EOS
         <thead><tr>
           <td>name</td><td class="bold">age, in years</td>
         </tr></thead>
-        <tbody/>
+        <tbody> </tbody>
       </table>
 EOS
   end

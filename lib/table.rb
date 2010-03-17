@@ -15,12 +15,12 @@ class Table
     @custom_header_renderers = {}
     @custom_body_renderers = {}
     to_get_field_from_datum do |datum,field|
-      datum.send(field)
+      datum.send(field).to_s 
     end
   end
 
   def render
-    @h = Builder::XmlMarkup.new
+    @h = Builder::XmlMarkup.new( :indent => 2 )
     @h.table {
       render_header
       render_body
