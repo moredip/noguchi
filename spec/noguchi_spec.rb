@@ -32,9 +32,9 @@ describe 'Noguchi' do
     verify_render <<-EOS
       <table>
         <thead>
-          <tr> </tr>
+          <tr></tr>
         </thead>
-        <tbody> </tbody>
+        <tbody></tbody>
       </table>
 EOS
   end
@@ -48,7 +48,7 @@ EOS
         <thead><tr>
           <td>Their name</td><td>Their age</td>
         </tr></thead>
-        <tbody> </tbody>
+        <tbody></tbody>
       </table>
 EOS
   end
@@ -99,13 +99,13 @@ EOS
       cell.content = "#{column_label}, in years"
       cell.attributes['class'] = 'bold'
     end
-
+  
     verify_render <<-EOS
       <table>
         <thead><tr>
           <td>name</td><td class="bold">age, in years</td>
         </tr></thead>
-        <tbody> </tbody>
+        <tbody></tbody>
       </table>
 EOS
   end
@@ -162,7 +162,23 @@ EOS
     @table.render
   end
 
-  it "does not escape html provided by custom renderers"
+  it "does not escape html in custom renderers if explicitly asked not to" do
+    @table = Table.new
+    setup_standard_columns
+    @table.to_render_header_cell_for( :age ) do |field,column_label,cell|
+      cell.raw_content = "<i>AGE</i>" 
+    end
+
+    verify_render <<-EOS
+      <table>
+        <thead><tr>
+          <td>name</td><td><i>AGE</i></td>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+EOS
+  end
+
 
   it 'should allow customization of html attributes for header cells'
   it 'should allow customization of html attributes for body cells'

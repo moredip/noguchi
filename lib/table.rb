@@ -19,8 +19,9 @@ class Table
     end
   end
 
-  def render
-    @h = Builder::XmlMarkup.new( :indent => 2 )
+  def render( options = {} )
+    options = {:pp => false}.merge( options )
+    @h = Builder::XmlMarkup.new( :indent => options[:pp] ? 2 : nil )
     @h.table {
       render_header
       render_body
