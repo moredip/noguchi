@@ -134,6 +134,27 @@ EOS
 EOS
   end
 
+  it 'should allow a custom body cell renderer for multiple specific fields' do 
+    @table = Table.new
+    setup_standard_columns
+    setup_standard_data
+    @table.to_render_body_cell_for(:name,:age) do |context,cell|
+      cell.content = context.field_value + "!"
+    end
+
+    verify_render <<-EOS
+      <table>
+        <thead><tr>
+          <th>name</th><th>age</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>dave!</td><td>12!</td></tr>
+          <tr><td>bob!</td><td>15!</td></tr>
+        </tbody>
+      </table>
+EOS
+  end
+  
   it 'exposes raw datum in content when rendering custom body cell' do
     jill = User.new('jill',12)
 

@@ -44,8 +44,10 @@ class Table
     @custom_header_renderers[field] = proc
   end
   
-  def to_render_body_cell_for( field, &proc )
-    @custom_body_renderers[field] = proc
+  def to_render_body_cell_for( *fields, &proc )
+    fields.each do |field|
+      @custom_body_renderers[field] = proc
+    end
   end
 
   private
