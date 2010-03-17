@@ -16,10 +16,10 @@ class Table
   end
 
   def render
-    h = Builder::XmlMarkup.new
-    h.table {
-      render_header(h)
-      render_body(h)
+    @h = Builder::XmlMarkup.new
+    @h.table {
+      render_header
+      render_body
     }
   end
 
@@ -41,42 +41,42 @@ class Table
   
   private
 
-  def render_header(h)
-      h.thead {
-        h.tr {
+  def render_header
+      @h.thead {
+        @h.tr {
           @fields.each do |field|
-            render_header_cell(field,h)
+            render_header_cell(field)
           end
         }
       }
   end
 
-  def render_header_cell(field,h)
+  def render_header_cell(field)
     column_label = @columns[field][:header_label]
     
     if @custom_header_renderers.has_key?(field) 
       cell_output = CellOutput.new
       @custom_header_renderers[field].call( field, column_label, cell_output )
-      cell_output.render_to(h)
+      cell_output.render_to(@h)
     else
-      h.td( column_label )
+      @h.td( column_label )
     end
   end
 
-  def render_body(h)
-      h.tbody {
+  def render_body
+      @h.tbody {
         @data.each do |datum|
-          h.tr {
+          @h.tr {
             @fields.each do |field|
-              render_cell(datum,field,h)
+              render_cell(datum,field)
             end
           }
         end
       }
   end
 
-  def render_cell(datum,field,h)
-    h.td( @field_extraction_proc.call(datum,field) )
+  def render_cell(datum,field)
+    @h.td( @field_extraction_proc.call(datum,field) )
   end
 
   def break_columns_into_header_and_field_names(columns)
