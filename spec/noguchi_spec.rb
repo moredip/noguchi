@@ -132,6 +132,19 @@ EOS
 EOS
   end
 
+  it 'exposes raw datum in content when rendering custom body cell' do
+    jill = User.new('jill',12)
+
+    @table = Table.new
+    setup_standard_columns
+    @table.data = [jill]
+    @table.to_render_body_cell_for(:name) do |context,cell|
+      context.datum.should == jill
+    end
+
+    @table.render
+  end
+
   it 'should allow customization of html attributes for header cells'
   it 'should allow customization of html attributes for body cells'
 

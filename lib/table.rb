@@ -86,7 +86,7 @@ class Table
   def render_body_cell(datum,field)
     field_value = @field_extraction_proc.call(datum,field) 
     if @custom_body_renderers.has_key?(field)
-      context = BodyCellRenderContext.new( field_value )
+      context = BodyCellRenderContext.new( datum, field_value )
       cell_output = CellOutput.new
       @custom_body_renderers[field].call( context, cell_output )
       cell_output.render_to(@h)
