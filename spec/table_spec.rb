@@ -4,7 +4,7 @@ require 'rexml/document'
 
 module Noguchi
 
-describe 'Noguchi' do
+describe Table do
   User = Struct.new( :name, :age )
 
   def verify_render( expected_render )
