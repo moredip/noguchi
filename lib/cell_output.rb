@@ -3,7 +3,8 @@ class CellOutput
   attr_writer :raw_content
   attr_reader :attributes
 
-  def initialize
+  def initialize( node_name = 'td' )
+    @node_name = node_name
     @attributes = {}
     @raw_content = ''
   end
@@ -13,8 +14,7 @@ class CellOutput
   end
   
   def render_to( h )
-    #h.td( @raw_content, @attributes )
-    h.td( @attributes ) do |h|
+    h.tag!( @node_name, @attributes ) do |h|
       h << @raw_content
     end
   end

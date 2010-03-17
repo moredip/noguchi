@@ -48,7 +48,7 @@ EOS
     verify_render <<-EOS
       <table>
         <thead><tr>
-          <td>Their name</td><td>Their age</td>
+          <th>Their name</th><th>Their age</th>
         </tr></thead>
         <tbody></tbody>
       </table>
@@ -63,7 +63,7 @@ EOS
     verify_render <<-EOS
       <table>
         <thead><tr>
-          <td>name</td><td>age</td>
+          <th>name</th><th>age</th>
         </tr></thead>
         <tbody>
           <tr><td>dave</td><td>12</td></tr>
@@ -84,7 +84,7 @@ EOS
     verify_render <<-EOS
       <table>
         <thead><tr>
-          <td>name</td><td>age</td>
+          <th>name</th><th>age</th>
         </tr></thead>
         <tbody>
           <tr><td>name for dave</td><td>age for dave</td></tr>
@@ -105,7 +105,7 @@ EOS
     verify_render <<-EOS
       <table>
         <thead><tr>
-          <td>name</td><td class="bold">age, in years</td>
+          <th>name</th><th class="bold">age, in years</th>
         </tr></thead>
         <tbody></tbody>
       </table>
@@ -124,7 +124,7 @@ EOS
     verify_render <<-EOS
       <table>
         <thead><tr>
-          <td>name</td><td>age</td>
+          <th>name</th><th>age</th>
         </tr></thead>
         <tbody>
           <tr><td class='italic'>DAVE!</td><td>12</td></tr>
@@ -174,7 +174,7 @@ EOS
     verify_render <<-EOS
       <table>
         <thead><tr>
-          <td>name</td><td><i>AGE</i></td>
+          <th>name</th><th><i>AGE</i></th>
         </tr></thead>
         <tbody></tbody>
       </table>

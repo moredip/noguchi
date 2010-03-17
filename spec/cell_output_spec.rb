@@ -15,6 +15,12 @@ describe CellOutput do
     @builder.should == expected_output
   end
 
+  it 'should render using a different node name if asked' do
+    @cell_output = CellOutput.new( 'th' )
+    @cell_output.content = 'cell contents'
+    xml_should_look_like "<th>cell contents</th>"
+  end
+
   it 'should render a vanilla cell correctly' do
     @cell_output.content = 'cell contents'
     xml_should_look_like "<td>cell contents</td>"

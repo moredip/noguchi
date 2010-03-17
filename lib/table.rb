@@ -64,11 +64,11 @@ class Table
     column_label = @columns[field][:header_label]
     
     if @custom_header_renderers.has_key?(field) 
-      cell_output = CellOutput.new
+      cell_output = CellOutput.new('th')
       @custom_header_renderers[field].call( field, column_label, cell_output )
       cell_output.render_to(@h)
     else
-      @h.td( column_label )
+      @h.th( column_label )
     end
   end
 
