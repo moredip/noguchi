@@ -94,6 +94,22 @@ EOS
 EOS
   end
 
+  it 'should let client add fields one by one' do
+    @table = Table.new
+    @table.add_field( :a, :label => 'Column A', :class => 'foo' )
+    @table.add_field( :b, :label => 'Column B' )
+
+    verify_render <<-EOS
+      <table>
+        <thead><tr>
+          <th class="foo">Column A</th>
+          <th>Column B</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+EOS
+  end
+
   it 'should allow a custom header cell renderer for a specific field' do
     @table = Table.new
     setup_standard_columns

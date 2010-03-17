@@ -29,10 +29,24 @@ class Table
   end
 
   def columns=(columns)
-    header_labels, @fields = break_columns_into_header_and_field_names(columns)
     @columns = {}
-    @fields.zip(header_labels) do |field,label|
-      @columns[field] = { :header_label => label }
+    @fields = []
+
+    header_labels, fields = break_columns_into_header_and_field_names(columns)
+    fields.zip(header_labels) do |field,label|
+      add_field( field, :label => label )
+    end
+  end
+
+  def add_field(field,column_options = {})
+    @fields << field 
+    @columns[field] = column_options
+
+    to_render_header_cell_for(field) do |field,column_label,cell|
+      cell.content = column_label
+      if column_options.has_key?(:class)
+        cell.attributes[:class] = column_options[:class] 
+      end
     end
   end
 
@@ -63,15 +77,11 @@ class Table
   end
 
   def render_header_cell(field)
-    column_label = @columns[field][:header_label]
+    column_label = @columns[field][:label]
     
-    if @custom_header_renderers.has_key?(field) 
-      cell_output = CellOutput.new('th')
-      @custom_header_renderers[field].call( field, column_label, cell_output )
-      cell_output.render_to(@h)
-    else
-      @h.th( column_label )
-    end
+    cell_output = CellOutput.new('th')
+    @custom_header_renderers[field].call( field, column_label, cell_output )
+    cell_output.render_to(@h)
   end
 
   def render_body
