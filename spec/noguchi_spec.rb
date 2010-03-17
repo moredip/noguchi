@@ -10,9 +10,10 @@ describe 'Noguchi' do
   end
 
   def normalize_xml( xml_str )
+    xml_str = xml_str.gsub( "\n", '' ).gsub( /^\s+/, '' )
     doc = REXML::Document.new( xml_str, :compress_whitespace => :all )
-    doc.write( out='', 0 )
-    out.gsub( "\n", '' ).gsub( /^\s+/, '' )
+    doc.write( out='', 2 )
+    out
   end
 
   def setup_standard_columns 
@@ -66,7 +67,7 @@ EOS
 EOS
   end
 
-  it "should use supplied proc to extract field value from datum" do
+  it "should support using a custom proc to extract field value from datum" do
     @table = Table.new
     setup_standard_columns
     @table.data = [
@@ -90,4 +91,28 @@ EOS
 EOS
   end
 
+  it 'should allow a custom header cell renderer for a specific field' do
+    @table = Table.new
+    setup_standard_columns
+    @table.to_render_header_cell_for( :age ) do |field,column_label,cell|
+      cell.content = "#{column_label}, in years"
+      cell.attributes['class'] = 'bold'
+    end
+
+    verify_render <<-EOS
+      <table>
+        <thead><tr>
+          <td>name</td><td class="bold">age, in years</td>
+        </tr></thead>
+        <tbody/>
+      </table>
+EOS
+  end
+
+  it 'should allow a custom body cell renderer for a specific field'
+
+  it 'should allow customization of html attributes for header cells'
+  it 'should allow customization of html attributes for body cells'
+
+  it 'should have option to pretty print output'
 end

@@ -9,6 +9,7 @@ class Table
     @fields = []
     @columns = {}
     @data = []
+    @custom_header_renderers = {}
     to_get_field_from_datum do |datum,field|
       datum.send(field)
     end
@@ -33,6 +34,10 @@ class Table
   def to_get_field_from_datum(&field_extraction_proc)
     @field_extraction_proc = field_extraction_proc
   end
+
+  def to_render_header_cell_for( field, &proc )
+    @custom_header_renderers[field] = proc
+  end
   
   private
 
@@ -40,10 +45,22 @@ class Table
       h.thead {
         h.tr {
           @fields.each do |field|
-            h.td( @columns[field][:header_label] )
+            render_header_cell(field,h)
           end
         }
       }
+  end
+
+  def render_header_cell(field,h)
+    column_label = @columns[field][:header_label]
+    
+    if @custom_header_renderers.has_key?(field) 
+      cell_output = CellOutput.new
+      @custom_header_renderers[field].call( field, column_label, cell_output )
+      cell_output.render_to(h)
+    else
+      h.td( column_label )
+    end
   end
 
   def render_body(h)
