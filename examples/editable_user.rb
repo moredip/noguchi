@@ -2,6 +2,12 @@
 
 require File.dirname(__FILE__)+'/common'
 
+begin
+  require 'activesupport'
+rescue LoadError
+  "activesupport is optional"
+end
+
 User = Struct.new( :uid, :name, :age, :sex )
 
 def edit_user_path(user)
@@ -20,10 +26,10 @@ users = [
 ]
 
 table = Noguchi.table
-table.add_field( :name, :label => "Name" ) 
-table.add_field( :age, :label => "Age" ) 
+table.add_field( :name ) 
+table.add_field( :age ) 
 table.add_field( :sex, :label => "Gender" ) 
-table.add_field( :edit, :label => "Edit", :class => 'edit' ) 
+table.add_field( :edit, :class => 'edit' ) 
 table.data = users
 table.to_render_body_cell_for(:name,:age) do |context,cell|
   cell.raw_content = "<a href='#{user_path(context.datum)}'>#{context.field_value}</a>"

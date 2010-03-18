@@ -14,6 +14,7 @@ class Table
     @data = []
     @header_renderers = {}
     @custom_body_renderers = {}
+
     to_get_field_from_datum do |datum,field|
       if datum.respond_to?( field )
         datum.send(field).to_s 
@@ -21,15 +22,6 @@ class Table
         datum[field].to_s
       end
     end
-  end
-
-  def render( options = {} )
-    options = {:pp => false}.merge( options )
-    @h = Builder::XmlMarkup.new( :indent => options[:pp] ? 2 : nil )
-    @h.table {
-      render_header
-      render_body
-    }
   end
 
   def columns=(columns)
@@ -43,7 +35,9 @@ class Table
   end
 
   def add_field(field,column_options = {})
-    column_options = {:label => ''}.merge( column_options )
+    unless column_options.has_key?(:label)
+      column_options[:label] = default_label_for(field)
+    end
 
     @fields << field 
     @columns[field] = column_options
@@ -70,8 +64,25 @@ class Table
     end
   end
 
+  def render( options = {} )
+    options = {:pp => false}.merge( options )
+    @h = Builder::XmlMarkup.new( :indent => options[:pp] ? 2 : nil )
+    @h.table {
+      render_header
+      render_body
+    }
+  end
+
   private
 
+  def default_label_for(field)
+    if defined?(ActiveSupport::Inflector)
+      ActiveSupport::Inflector.titleize(field)
+    else
+      field.to_s
+    end
+  end
+  
   def render_header
       @h.thead {
         @h.tr {

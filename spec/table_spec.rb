@@ -75,7 +75,7 @@ EOS
 
   it 'should fall back to using subscript operator to extract field value from datum if the datum does not respond to the required method' do
     @table = Table.new
-    @table.add_field( :a_hash_key )
+    @table.add_field( :a_hash_key, :label => '' )
     @table.data = [ {:a_hash_key => 'hash_value'} ]
     
     verify_render <<-EOS
@@ -121,6 +121,21 @@ EOS
         <thead><tr>
           <th class="foo">Column A</th>
           <th>Column B</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+EOS
+  end
+
+  it "should derive a sensible column label, if possible" do
+    require 'activesupport'
+    @table = Table.new
+    @table.add_field( :some_field_name )
+
+    verify_render <<-EOS
+      <table>
+        <thead><tr>
+          <th>Some Field Name</th>
         </tr></thead>
         <tbody></tbody>
       </table>
