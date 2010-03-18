@@ -111,7 +111,7 @@ EOS
 EOS
   end
 
-  it 'should let client add fields one by one' do
+  it 'should let client add fields one by one, customizing as they go' do
     @table = Table.new
     @table.add_field( :a, :label => 'Column A', :class => 'foo' )
     @table.add_field( :b, :label => 'Column B' )

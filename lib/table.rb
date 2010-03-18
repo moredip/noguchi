@@ -12,7 +12,7 @@ class Table
     @fields = []
     @columns = {}
     @data = []
-    @custom_header_renderers = {}
+    @header_renderers = {}
     @custom_body_renderers = {}
     to_get_field_from_datum do |datum,field|
       if datum.respond_to?( field )
@@ -61,7 +61,7 @@ class Table
   end
 
   def to_render_header_cell_for( field, &proc )
-    @custom_header_renderers[field] = proc
+    @header_renderers[field] = proc
   end
   
   def to_render_body_cell_for( *fields, &proc )
@@ -86,7 +86,7 @@ class Table
     column_label = @columns[field][:label]
     
     cell_output = CellOutput.new('th')
-    @custom_header_renderers[field].call( field, column_label, cell_output )
+    @header_renderers[field].call( field, column_label, cell_output )
     cell_output.render_to(@h)
   end
 
