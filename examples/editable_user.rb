@@ -42,6 +42,4 @@ table.to_render_body_cell_for(:edit) do |context,cell|
   cell.raw_content = "<a href='#{edit_user_path(context.datum)}'>Edit this user</a>"
 end
 
-output = table.render(:pp => true)
-
-puts output
+display(table)
