@@ -57,6 +57,10 @@ class CellRenderProxy
   end
 
   def render_cell( content, attributes = {} )
+    render_raw_cell( content.to_xs, attributes )
+  end
+
+  def render_raw_cell( content, attributes = {} )
     @builder.tag!( @cell_node_name, attributes ) {
       @builder << content
     }

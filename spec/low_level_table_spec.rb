@@ -15,11 +15,9 @@ module Noguchi
 
     before :each do
       @llt = LowLevelTable.new
-      @llt.data = USER_DATA
     end
 
     it "should render header section as directed" do
-      @llt.data = []
       @llt.to_render_header_row do 
         render_cell( 'foo' )
         render_cell( 'bar', :class => 'ze_klazz', :arbitrary => 'attribute' )
@@ -39,6 +37,7 @@ EOS
     end
 
     it "should render body section as directed" do
+      @llt.data = USER_DATA
       @llt.to_render_body_row do
         render_cell( datum.name, :attr => 'foo' )
         render_cell( 'more' )
@@ -59,6 +58,40 @@ EOS
             <td>more</td>
           </tr>
         </tbody>
+      </table>
+EOS
+    end
+
+    it 'should encode text content' do
+      @llt.to_render_header_row do 
+        render_cell( 'a < b' )
+      end
+      
+     verify_render <<-EOS
+      <table>
+        <thead>
+          <tr>
+            <th>a &lt; b</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+EOS
+    end
+
+    it 'should render raw content' do
+      @llt.to_render_header_row do 
+        render_raw_cell( '<i>foo</i>', :attr => 'blah')
+      end
+      
+     verify_render <<-EOS
+      <table>
+        <thead>
+          <tr>
+            <th attr="blah"><i>foo</i></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
       </table>
 EOS
     end
