@@ -66,14 +66,76 @@ class Table
 
   def render( options = {} )
     options = {:pp => false}.merge( options )
-    @h = Builder::XmlMarkup.new( :indent => options[:pp] ? 2 : nil )
-    @h.table {
-      render_header
-      render_body
-    }
+
+    low_level_table = LowLevelTable.new
+    low_level_table.data = @data
+
+    myself = self
+    low_level_table.to_render_header_row do 
+      myself.render_header_rows( self )
+    end
+
+    low_level_table.to_render_body_row do 
+      myself.render_body_row( self )
+    end
+
+    low_level_table.render(options)
+  end
+
+  def render_header_rows( rendering_context )
+    @fields.each do |field|
+      render_header_row( field, rendering_context )
+    end
+  end
+
+  def render_body_row( rendering_context )
+    @fields.each do |field|
+      render_body_cell( field, rendering_context )
+    end
   end
 
   private
+  
+  def render_header_row( field, rendering_context )
+    cell_output = CellOutput.new
+    header_renderer_for(field).call( 
+      field,
+      column_label_for(field),
+      cell_output
+    )
+
+    rendering_context.render_raw_cell( 
+      cell_output.raw_content,
+      cell_output.attributes
+    )
+  end
+
+  def header_renderer_for(field)
+    @header_renderers[field]
+  end
+
+  def column_label_for(field)
+    @columns[field][:label]
+  end
+
+  def render_body_cell( field, rendering_context )
+    if @custom_body_renderers.has_key?(field)
+      context = BodyCellRenderContext.new( 
+        rendering_context.datum, 
+        field, 
+        @field_extraction_proc 
+      )
+      cell_output = CellOutput.new
+      @custom_body_renderers[field].call( context, cell_output )
+      rendering_context.render_raw_cell( 
+        cell_output.raw_content,
+        cell_output.attributes
+      )
+    else
+      field_value = @field_extraction_proc.call(rendering_context.datum,field) 
+      rendering_context.render_cell( field_value )
+    end
+  end
 
   def default_label_for(field)
     if defined?(ActiveSupport::Inflector)
@@ -83,48 +145,6 @@ class Table
     end
   end
   
-  def render_header
-      @h.thead {
-        @h.tr {
-          @fields.each do |field|
-            render_header_cell(field)
-          end
-        }
-      }
-  end
-
-  def render_header_cell(field)
-    column_label = @columns[field][:label]
-    
-    cell_output = CellOutput.new('th')
-    @header_renderers[field].call( field, column_label, cell_output )
-    cell_output.render_to(@h)
-  end
-
-  def render_body
-      @h.tbody {
-        @data.each do |datum|
-          @h.tr {
-            @fields.each do |field|
-              render_body_cell(datum,field)
-            end
-          }
-        end
-      }
-  end
-
-  def render_body_cell(datum,field)
-    if @custom_body_renderers.has_key?(field)
-      context = BodyCellRenderContext.new( datum, field, @field_extraction_proc )
-      cell_output = CellOutput.new
-      @custom_body_renderers[field].call( context, cell_output )
-      cell_output.render_to(@h)
-    else
-      field_value = @field_extraction_proc.call(datum,field) 
-      @h.td( field_value )
-    end
-  end
-
   def break_columns_into_header_and_field_names(columns)
     header_names = []
     field_names = []
