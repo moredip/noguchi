@@ -1,21 +1,11 @@
 require File.dirname(__FILE__)+'/spec_helper.rb'
 require 'table'
-require 'rexml/document'
 
 module Noguchi
 
 describe Table do
-  User = Struct.new( :name, :age )
-
   def verify_render( expected_render )
     normalize_xml( @table.render ).should == normalize_xml( expected_render )
-  end
-
-  def normalize_xml( xml_str )
-    xml_str = xml_str.gsub( "\n", '' ).gsub( /^\s+/, '' )
-    doc = REXML::Document.new( xml_str, :compress_whitespace => :all )
-    doc.write( out='', 2 )
-    out
   end
 
   def setup_standard_columns 

@@ -53,6 +53,29 @@
 	end
 
 
+  
+
+  llt = LowLevelTable.new
+  llt.to_render_header do
+    render_cell( "Name" )
+    render_cell( "Age" )
+  end
+  llt.to_render_row do |datum|
+    render_cell( datum.name, :class => foo )
+    render_cell( datum.age )
+  end
+
+
+  #CSV rendering
+  #
+  table.to_csv
+
+
+  
+
+  Noguchi.model_table(@users).render
+
+
 # Possible Objects/Concepts
 
 Table
