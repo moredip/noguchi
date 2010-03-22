@@ -18,7 +18,7 @@ module Noguchi
       @llt.data = USER_DATA
     end
 
-    it "should render header as you'd expect" do
+    it "should render header section as directed" do
       @llt.data = []
       @llt.to_render_header_row do 
         render_cell( 'foo' )
@@ -34,6 +34,31 @@ module Noguchi
           </tr>
         </thead>
         <tbody></tbody>
+      </table>
+EOS
+    end
+
+    it "should render body section as directed" do
+      @llt.to_render_body_row do
+        render_cell( datum.name, :attr => 'foo' )
+        render_cell( 'more' )
+      end
+      
+     verify_render <<-EOS
+      <table>
+        <thead>
+          <tr></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td attr="foo">dave</td>
+            <td>more</td>
+          </tr>
+          <tr>
+            <td attr="foo">mary</td>
+            <td>more</td>
+          </tr>
+        </tbody>
       </table>
 EOS
     end
