@@ -1,5 +1,5 @@
 module Noguchi
-class BodyCellRenderContext
+class CellDataContext
   attr_reader :datum, :field
 
   def initialize( datum, field, field_value_extraction_proc )

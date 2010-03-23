@@ -1,7 +1,7 @@
 require 'builder'
 
 require File.join File.dirname(__FILE__), 'cell_output'
-require File.join File.dirname(__FILE__), 'body_cell_render_context'
+require File.join File.dirname(__FILE__), 'cell_data_context'
 
 module Noguchi
 class Table
@@ -9,14 +9,11 @@ class Table
   attr_writer :data
 
   def initialize
-    @fields = []
-    @field_ordering = []
-    @fields_hash = {}
-    @columns = {}
+    reset_fields
     @data = []
-    @custom_body_renderers = {}
 
-    to_get_field_from_datum do |datum,field|
+    # default field value extraction proc
+    @field_value_extraction_proc = lambda do |datum,field|
       if datum.respond_to?( field )
         datum.send(field).to_s 
       else
@@ -26,10 +23,7 @@ class Table
   end
 
   def columns=(columns)
-    @columns = {}
-    @fields = []
-    @field_ordering = []
-    @fields_hash = {}
+    reset_fields
 
     header_labels, fields = break_columns_into_header_and_field_names(columns)
     fields.zip(header_labels) do |field,label|
@@ -37,24 +31,21 @@ class Table
     end
   end
 
-  def add_field(field,column_options = {})
-    register_field( Field.from_column_options( field, column_options ) )
-
-    @fields << field 
-    @columns[field] = column_options
+  def add_field(field_name,column_options = {})
+    register_field( Field.from_column_options( field_name, column_options ) )
   end
 
   def to_get_field_from_datum(&field_value_extraction_proc)
     @field_value_extraction_proc = field_value_extraction_proc
   end
 
-  def to_render_header_cell_for( field, &proc )
-    @fields_hash[field].custom_header_cell_render_proc = proc
+  def to_render_header_cell_for( field_name, &proc )
+    @fields_hash[field_name].custom_header_cell_render_proc = proc
   end
   
   def to_render_body_cell_for( *fields, &proc )
-    fields.each do |field|
-      @custom_body_renderers[field] = proc
+    fields.each do |field_name|
+      @fields_hash[field_name].custom_body_cell_render_proc = proc
     end
   end
 
@@ -77,27 +68,36 @@ class Table
   end
 
   def render_header_rows( rendering_context )
-    @fields.each do |field|
+    fields_in_order.each do |field|
       render_header_row( field, rendering_context )
     end
   end
 
   def render_body_row( rendering_context )
-    @fields.each do |field|
+    fields_in_order.each do |field|
       render_body_cell( field, rendering_context )
     end
   end
 
   private
 
+  def reset_fields
+    @ordered_field_names = []
+    @fields_hash = {}
+  end
+
   def register_field( field )
-    @field_ordering << field.name
+    @ordered_field_names << field.name
     @fields_hash[field.name] = field 
+  end
+
+  def fields_in_order
+    @ordered_field_names.map{ |field_name| @fields_hash[field_name] }
   end
   
   def render_header_row( field, rendering_context )
     cell_output = CellOutput.new
-    @fields_hash[field].render_header_cell(cell_output)
+    field.render_header_cell(cell_output)
 
     rendering_context.render_raw_cell( 
       cell_output.raw_content,
@@ -106,22 +106,12 @@ class Table
   end
 
   def render_body_cell( field, rendering_context )
-    if @custom_body_renderers.has_key?(field)
-      context = BodyCellRenderContext.new( 
-        rendering_context.datum, 
-        field, 
-        @field_value_extraction_proc 
-      )
-      cell_output = CellOutput.new
-      @custom_body_renderers[field].call( context, cell_output )
-      rendering_context.render_raw_cell( 
-        cell_output.raw_content,
-        cell_output.attributes
-      )
-    else
-      field_value = @field_value_extraction_proc.call(rendering_context.datum,field) 
-      rendering_context.render_cell( field_value )
-    end
+    data_context = CellDataContext.new( 
+      rendering_context.datum, 
+      field.name, 
+      @field_value_extraction_proc 
+    )
+    field.render_body_cell(data_context,rendering_context)
   end
 
   def break_columns_into_header_and_field_names(columns)
@@ -160,6 +150,26 @@ class Field < Struct.new( :name, :column_label, :column_class )
       cell.content = column_label
       cell.attributes[:class] = column_class if column_class
     end
+  end
+
+  def render_body_cell(data_context,rendering_context)
+    cell_output = generate_cell_output_for_body_cell( data_context )
+    rendering_context.render_raw_cell( 
+      cell_output.raw_content,
+      cell_output.attributes
+    )
+  end
+
+  private
+
+  def generate_cell_output_for_body_cell( data_context )
+    cell_output = CellOutput.new
+    if @custom_body_cell_render_proc
+      @custom_body_cell_render_proc.call( data_context, cell_output )
+    else
+      cell_output.content = data_context.field_value
+    end
+    cell_output
   end
 end
 end
