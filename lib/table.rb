@@ -9,8 +9,8 @@ class Table
   attr_writer :data
 
   def initialize
-    reset_fields
     @data = []
+    reset_fields
 
     # default field value extraction proc
     @field_value_extraction_proc = lambda do |datum,field|
