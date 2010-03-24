@@ -1,5 +1,3 @@
-require 'table'
-
 module Noguchi
 
 class ModelTable
@@ -10,7 +8,7 @@ class ModelTable
     table.data = data
 
     sample_datum.attributes.each do |model_attr|
-      table.add_field( model_attr ) 
+      table.add_field( model_attr ) unless :id == model_attr.to_sym
     end
 
     table    

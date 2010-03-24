@@ -41,6 +41,22 @@ describe ModelTable do
       </table>
 EOS
   end
+
+  it 'should not render an id column' do
+    data = [
+      UserModel.new( 'Lisa', 32, 132.1 ),
+      UserModel.new( 'Mike', 25, 178.5 )
+    ]
+    data.each do |datum|
+      def datum.attributes
+        [:id] + super
+      end
+    end
+
+    @table = ModelTable.for( data )
+    @table.render.should_not =~ /id/
+      
+  end
 end
 
 end
