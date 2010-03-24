@@ -9,8 +9,8 @@ class Table
   attr_writer :data
 
   def initialize
-    reset_fields
     @data = []
+    reset_fields
 
     # default field value extraction proc
     @field_value_extraction_proc = lambda do |datum,field|
@@ -50,33 +50,8 @@ class Table
   end
 
   def render( options = {} )
-    options = {:pp => false}.merge( options )
-
-    low_level_table = LowLevelTable.new
-    low_level_table.data = @data
-
-    myself = self
-    low_level_table.to_render_header_row do 
-      myself.render_header_rows( self )
-    end
-
-    low_level_table.to_render_body_row do 
-      myself.render_body_row( self )
-    end
-
-    low_level_table.render(options)
-  end
-
-  def render_header_rows( rendering_context )
-    fields_in_order.each do |field|
-      render_header_row( field, rendering_context )
-    end
-  end
-
-  def render_body_row( rendering_context )
-    fields_in_order.each do |field|
-      render_body_cell( field, rendering_context )
-    end
+    renderer = TableRenderer.new(options)
+    renderer.render( @data, fields_in_order, @field_value_extraction_proc )
   end
 
   private
@@ -95,25 +70,6 @@ class Table
     @ordered_field_names.map{ |field_name| @fields_hash[field_name] }
   end
   
-  def render_header_row( field, rendering_context )
-    cell_output = CellOutput.new
-    field.render_header_cell(cell_output)
-
-    rendering_context.render_raw_cell( 
-      cell_output.raw_content,
-      cell_output.attributes
-    )
-  end
-
-  def render_body_cell( field, rendering_context )
-    data_context = CellDataContext.new( 
-      rendering_context.datum, 
-      field.name, 
-      @field_value_extraction_proc 
-    )
-    field.render_body_cell(data_context,rendering_context)
-  end
-
   def break_columns_into_header_and_field_names(columns)
     header_names = []
     field_names = []
@@ -172,4 +128,63 @@ class Field < Struct.new( :name, :column_label, :column_class )
     cell_output
   end
 end
+
+class TableRenderer
+  def initialize( options )
+    @options = {:pp => false}.merge( options )
+  end
+
+  def render( data, fields,  field_value_extraction_proc )
+    @fields = fields
+    @field_value_extraction_proc = field_value_extraction_proc
+
+    low_level_table = LowLevelTable.new
+    low_level_table.data = data
+
+    myself = self
+    low_level_table.to_render_header_row do 
+      myself.render_header_rows( self )
+    end
+
+    low_level_table.to_render_body_row do 
+      myself.render_body_row( self )
+    end
+
+    low_level_table.render(@options)
+  end
+
+  def render_header_rows( rendering_context )
+    @fields.each do |field|
+      render_header_row( field, rendering_context )
+    end
+  end
+
+  def render_body_row( rendering_context )
+    @fields.each do |field|
+      render_body_cell( field, rendering_context )
+    end
+  end
+
+  private
+
+  def render_header_row( field, rendering_context )
+    cell_output = CellOutput.new
+    field.render_header_cell(cell_output)
+
+    rendering_context.render_raw_cell( 
+      cell_output.raw_content,
+      cell_output.attributes
+    )
+  end
+
+  def render_body_cell( field, rendering_context )
+    data_context = CellDataContext.new( 
+      rendering_context.datum, 
+      field.name, 
+      @field_value_extraction_proc 
+    )
+    field.render_body_cell(data_context,rendering_context)
+  end
+end
+
 end
