@@ -1,6 +1,21 @@
 require 'rubygems'
 require 'noguchi'
 
+
+class User
+  ATTRIBUTES = [:id, :name, :age, :sex]
+  attr_accessor *ATTRIBUTES
+
+  def initialize( *args )
+    @id, @name, @age, @sex = *args
+  end
+
+  def attributes
+    ATTRIBUTES
+  end
+end
+
+
 def display(table)
   require "launchy"
 
