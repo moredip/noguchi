@@ -4,19 +4,6 @@ require 'model_table'
 module Noguchi
 
 describe ModelTable do
-  class UserModel
-    ATTRIBUTES = [:name, :age, :weight]
-    attr_accessor *ATTRIBUTES
-
-    def initialize( *args )
-      @name, @age, @weight = *args
-    end
-
-    def attributes
-      ATTRIBUTES
-    end
-  end
-
   def verify_render( expected_render )
     normalize_xml( @table.render ).should == normalize_xml( expected_render )
   end

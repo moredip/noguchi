@@ -50,11 +50,20 @@ class Table
   end
 
   def render( options = {} )
-    renderer = TableRenderer.new(options)
-    renderer.render( @data, fields_in_order, @field_value_extraction_proc )
+    renderer = create_renderer 
+    renderer.render( options )
+  end
+
+  def render_as_csv
+    renderer = create_renderer 
+    renderer.render_as_csv
   end
 
   private
+
+  def create_renderer
+    TableRenderer.new(@data, fields_in_order, @field_value_extraction_proc)
+  end
 
   def reset_fields
     @ordered_field_names = []
@@ -130,16 +139,29 @@ class Field < Struct.new( :name, :column_label, :column_class )
 end
 
 class TableRenderer
-  def initialize( options )
-    @options = {:pp => false}.merge( options )
-  end
-
-  def render( data, fields,  field_value_extraction_proc )
+  def initialize( data, fields, field_value_extraction_proc )
+    @data = data
     @fields = fields
     @field_value_extraction_proc = field_value_extraction_proc
+  end
+
+  def render_as_csv
+    rows = []
+    rows << @fields.map{|x| x.name}.join(",")
+    @data.each do |datum|
+      row_values = @fields.map do |field|
+        CellDataContext.new(datum,field.name,@field_value_extraction_proc).field_value.to_s
+      end
+      rows << row_values.join(",")
+    end
+    rows.join("\n")
+  end
+
+  def render( options )
+    options = {:pp => false}.merge( options )
 
     low_level_table = LowLevelTable.new
-    low_level_table.data = data
+    low_level_table.data = @data
 
     myself = self
     low_level_table.to_render_header_row do 
@@ -150,7 +172,7 @@ class TableRenderer
       myself.render_body_row( self )
     end
 
-    low_level_table.render(@options)
+    low_level_table.render(options)
   end
 
   def render_header_rows( rendering_context )

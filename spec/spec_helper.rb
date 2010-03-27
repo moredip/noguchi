@@ -4,6 +4,18 @@ require 'rexml/document'
 
 User = Struct.new( :name, :age )
 
+class UserModel
+  ATTRIBUTES = [:name, :age, :weight]
+  attr_accessor *ATTRIBUTES
+
+  def initialize( *args )
+    @name, @age, @weight = *args
+  end
+
+  def attributes
+    ATTRIBUTES
+  end
+end
 
 def normalize_xml( xml_str )
   xml_str = xml_str.gsub( "\n", '' ).gsub( /^\s+/, '' )
