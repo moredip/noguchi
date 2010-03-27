@@ -112,5 +112,93 @@ M      </td>
 <a href='http://example.com/users/3/edit'>Edit this user</a>      </td> 
     </tr> 
   </tbody> 
+</table>
+
+## The underlying table construction mechanism ##
+
+Noguchi renders tables using an underlying LowLevelTable class. This class implements a small DSL, allowing us to write code like this:
+
+
+    table = LowLevelTable.new
+    
+    table.to_render_header_row do
+      render_cell('original text')
+      render_cell('titleized')
+      render_cell('camelized')
+      render_cell('underscored')
+    end
+    
+    require 'activesupport'
+    table.to_render_body_row do 
+      render_cell( datum )
+      render_cell( datum.titleize )
+      render_cell( datum.camelize )
+      render_cell( datum.underscore )
+    end
+    
+    table.data = [
+      'ThisIsTheEnd',
+      'the end my friend',
+      'the_only_end::the_end',
+      'MY FRIEND'
+    ]
+
+which will render a table like:
+
+<table border="1"> 
+  <thead> 
+    <tr> 
+      <th> 
+original text      </th> 
+      <th> 
+titleized      </th> 
+      <th> 
+camelized      </th> 
+      <th> 
+underscored      </th> 
+    </tr> 
+  </thead> 
+  <tbody> 
+    <tr> 
+      <td> 
+ThisIsTheEnd      </td> 
+      <td> 
+This Is The End      </td> 
+      <td> 
+ThisIsTheEnd      </td> 
+      <td> 
+this_is_the_end      </td> 
+    </tr> 
+    <tr> 
+      <td> 
+the end my friend      </td> 
+      <td> 
+The End My Friend      </td> 
+      <td> 
+The end my friend      </td> 
+      <td> 
+the end my friend      </td> 
+    </tr> 
+    <tr> 
+      <td> 
+the_only_end::the_end      </td> 
+      <td> 
+The Only End/The End      </td> 
+      <td> 
+TheOnlyEnd::theEnd      </td> 
+      <td> 
+the_only_end/the_end      </td> 
+    </tr> 
+    <tr> 
+      <td> 
+MY FRIEND      </td> 
+      <td> 
+My Friend      </td> 
+      <td> 
+MY FRIEND      </td> 
+      <td> 
+my friend      </td> 
+    </tr> 
+  </tbody> 
 </table> 
 
