@@ -1,7 +1,7 @@
 Noguchi
 =======
 
-A simple, declarative way to display tabular data
+A simple, declarative way to display tabular data.
 
 Usage Examples
 --------------
@@ -56,7 +56,7 @@ M      </td>
 
 ### Model-based table with some customization ###
 
-That table looks OK, but how about if we want to customize it by adding an edit link for each row? It's simple:
+That table looks OK, but how about if we want to customize it by adding an edit link for each row? No problem:
 
     table = Noguchi::ModelTable.for(users)
     table.add_field(:edit)
@@ -113,6 +113,64 @@ M      </td>
     </tr> 
   </tbody> 
 </table>
+
+For another example let's suppose we want to use a column header of 'Gender' rather than 'Sex', and use Male or Female rather than M or F. We could accomplish this by modifying the model, maybe by adding a new method which outputs the gender in a more user-friendly way, but do we really want to dilute our model class with code just for UI rendering? Instead, we can just customize our table configuration:
+
+    table = Noguchi::ModelTable.for(users)
+    
+    table.set_column_label( :sex, 'Gender' )
+    table.to_render_body_cell_for(:sex) do |context,cell|
+      cell.content = case context.datum.sex
+        when :F
+          'Female'
+        when :M
+          'Male'
+        else
+          'Unknown'
+      end
+    end
+
+now our table looks like:
+
+<table border="1"> 
+  <thead> 
+    <tr> 
+      <th> 
+Name      </th> 
+      <th> 
+Age      </th> 
+      <th> 
+Gender      </th> 
+    </tr> 
+  </thead> 
+  <tbody> 
+    <tr> 
+      <td> 
+Jenny      </td> 
+      <td> 
+24      </td> 
+      <td> 
+Female      </td> 
+    </tr> 
+    <tr> 
+      <td> 
+Dave      </td> 
+      <td> 
+32      </td> 
+      <td> 
+Male      </td> 
+    </tr> 
+    <tr> 
+      <td> 
+Hank      </td> 
+      <td> 
+27      </td> 
+      <td> 
+Male      </td> 
+    </tr> 
+  </tbody> 
+</table> 
+
 
 ## The underlying table construction mechanism ##
 
@@ -201,4 +259,25 @@ my friend      </td>
     </tr> 
   </tbody> 
 </table> 
+
+## CSV support ##
+
+It's as simple as calling a single method:
+
+    users = [
+      User.new( 1, "Jenny", 24, :F ),
+      User.new( 2, "Dave", 32, :M ),
+      User.new( 3, "Hank", 27, :M )
+    ]
+    
+    table = Noguchi::ModelTable.for(users)
+    
+    puts table.render_as_csv
+
+will generate
+
+    name,age,sex
+    Jenny,24,F
+    Dave,32,M
+    Hank,27,M
 
