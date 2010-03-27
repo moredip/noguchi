@@ -35,6 +35,10 @@ class Table
     register_field( Field.from_column_options( field_name, column_options ) )
   end
 
+  def set_column_label(field_name,column_label)
+    @fields_hash[field_name].column_label = column_label
+  end
+
   def to_get_field_from_datum(&field_value_extraction_proc)
     @field_value_extraction_proc = field_value_extraction_proc
   end

@@ -132,6 +132,21 @@ EOS
 EOS
   end
 
+  it "should allow customizing column labels" do
+    @table = Table.new
+    @table.add_field( :some_field_name )
+    @table.set_column_label( :some_field_name, 'Customized!' )
+
+    verify_render <<-EOS
+      <table>
+        <thead><tr>
+          <th>Customized!</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+EOS
+  end
+
   it 'should allow a custom header cell renderer for a specific field' do
     @table = Table.new
     setup_standard_columns
