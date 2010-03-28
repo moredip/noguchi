@@ -22,6 +22,11 @@ class Table
     end
   end
 
+  # Specifies the fields in the table, along with the column labels.
+  # Caller should pass in an array containing a concatenated set of 
+  # field_name,column_label pairs.
+  # e.g. table.columns = ["Name",:name,"Age",:age,"Gender",:sex]
+  # Wouldn't it be nice if that was clearer!
   def columns=(columns)
     reset_fields
 
@@ -31,6 +36,9 @@ class Table
     end
   end
 
+  # Adds a new field to the table. 
+  # column_options can specify a :label to be used in the header row, and 
+  # also a CSS :class
   def add_field(field_name,column_options = {})
     register_field( Field.from_column_options( field_name, column_options ) )
   end
@@ -39,25 +47,39 @@ class Table
     @fields_hash[field_name].column_label = column_label
   end
 
+  # Specifies a custom procedure for extracting a field value for a given datum.
+  # The supplied block will be called with parameters |datum,field_name|
   def to_get_field_from_datum(&field_value_extraction_proc)
     @field_value_extraction_proc = field_value_extraction_proc
   end
 
+  # Specifies a custom procedure for rendering the header cell for a
+  # given field. 
+  # The supplied block will be called with |field_name,column_label,cell|
+  # where the cell parameter is an instance of CellOutput, used to render output.
   def to_render_header_cell_for( field_name, &proc )
     @fields_hash[field_name].custom_header_cell_render_proc = proc
   end
   
+  # Specifies a custom procedure for rendering the body cell for a
+  # given set of fields.
+  # The supplied block will be called with |data_context,cell|
+  # where the data_context is an instance of CellDataContext, supplying 
+  # information about the datum and field being rendered,
+  # and the cell parameter is an instance of CellOutput, used to render output.
   def to_render_body_cell_for( *fields, &proc )
     fields.each do |field_name|
       @fields_hash[field_name].custom_body_cell_render_proc = proc
     end
   end
 
+  # Renders the table as HTML
   def render( options = {} )
     renderer = create_renderer 
     renderer.render( options )
   end
 
+  # Renders the table as CSV
   def render_as_csv
     renderer = create_renderer 
     renderer.render_as_csv
