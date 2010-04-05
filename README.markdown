@@ -10,7 +10,7 @@ Usage Examples
 
 Let's start off with a simple case. We have a collection of ActiveRecord model instances, and we want to create a table for them. That's as simple as:
 
-    table = Noguchi::ModelTable.for( users )
+    table = Noguchi.table_for(users)
     table.render
 
 That will generate a table which looks something like this:
@@ -58,7 +58,7 @@ M      </td>
 
 That table looks OK, but how about if we want to customize it by adding an edit link for each row? No problem:
 
-    table = Noguchi::ModelTable.for(users)
+    table = Noguchi.table_for(users)
     table.add_field(:edit)
     table.to_render_body_cell_for(:edit) do |context,cell|
       cell.raw_content = link_to( "Edit this user", edit_user_path(context.datum) )
@@ -116,7 +116,7 @@ M      </td>
 
 For another example let's suppose we want to use a column header of 'Gender' rather than 'Sex', and use Male or Female rather than M or F. We could accomplish this by modifying the model, maybe by adding a new method which outputs the gender in a more user-friendly way, but do we really want to dilute our model class with code just for UI rendering? Instead, we can just customize our table configuration:
 
-    table = Noguchi::ModelTable.for(users)
+    table = Noguchi.table_for(users)
     
     table.set_column_label( :sex, 'Gender' )
     table.to_render_body_cell_for(:sex) do |context,cell|
@@ -170,6 +170,49 @@ Male      </td>
     </tr> 
   </tbody> 
 </table> 
+
+### Building a table from an array of hashes ###
+This is just as easy as you'd expect:
+
+    fruits = [
+      { :name => 'banana', :color => 'yellow' },
+      { :name => 'apple', :color => 'green' },
+      { :name => 'orange', :color => 'orange' } 
+    ]
+    table = Noguchi.table_for(fruits)
+
+will generate this table:
+
+<table border="1">
+  <thead>
+    <tr>
+      <th>
+name      </th>
+      <th>
+color      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+banana      </td>
+      <td>
+yellow      </td>
+    </tr>
+    <tr>
+      <td>
+apple      </td>
+      <td>
+green      </td>
+    </tr>
+    <tr>
+      <td>
+orange      </td>
+      <td>
+orange      </td>
+    </tr>
+  </tbody>
+</table>
 
 
 ## The underlying table construction mechanism ##
@@ -270,7 +313,7 @@ It's as simple as calling a single method:
       User.new( 3, "Hank", 27, :M )
     ]
     
-    table = Noguchi::ModelTable.for(users)
+    table = Noguchi.table_for(users)
     
     puts table.render_as_csv
 
