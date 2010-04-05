@@ -7,7 +7,7 @@ class ModelTable
     table = Table.new
     table.data = data
 
-    sample_datum.attributes.each do |model_attr|
+    sample_datum.attribute_names.each do |model_attr|
       table.add_field( model_attr ) unless :id == model_attr.to_sym
     end
 

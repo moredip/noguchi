@@ -12,7 +12,7 @@ class UserModel
     @name, @age, @weight = *args
   end
 
-  def attributes
+  def attribute_names
     ATTRIBUTES
   end
 end
