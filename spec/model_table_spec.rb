@@ -29,6 +29,28 @@ describe ModelTable do
 EOS
   end
 
+  it 'should render an array of hashes' do
+    data = [
+      { :name => 'Lisa', :age => '54' },
+      { :name => 'Tom', :age => '32' }
+    ]
+
+    @table = ModelTable.for( data )
+
+    verify_render <<-EOS
+      <table>
+        <thead><tr>
+          <th>age</th><th>name</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>54</td><td>Lisa</td></tr>
+          <tr><td>32</td><td>Tom</td></tr>
+        </tbody>
+      </table>
+EOS
+
+  end
+
   it 'should not render an id column' do
     data = [
       UserModel.new( 'Lisa', 32, 132.1 ),
