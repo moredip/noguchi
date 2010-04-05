@@ -14,6 +14,6 @@ users = [
   User.new( 3, "Hank", 27, :M )
 ]
 
-table = Noguchi::ModelTable.for(users)
+table = Noguchi::SimpleTable.for(users)
 
 display(table)

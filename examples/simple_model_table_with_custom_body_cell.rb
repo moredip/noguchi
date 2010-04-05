@@ -14,7 +14,7 @@ users = [
   User.new( 3, "Hank", 27, :M )
 ]
 
-table = Noguchi::ModelTable.for(users)
+table = Noguchi::SimpleTable.for(users)
 
 table.set_column_label( :sex, 'Gender' )
 table.to_render_body_cell_for(:sex) do |context,cell|

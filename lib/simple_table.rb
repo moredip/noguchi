@@ -1,6 +1,6 @@
 module Noguchi
 
-class ModelTable
+class SimpleTable
   def self.for(data)
     table = Table.new
     table.data = data

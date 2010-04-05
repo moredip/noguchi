@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'noguchi'
 
 
@@ -10,7 +9,7 @@ class User
     @id, @name, @age, @sex = *args
   end
 
-  def attributes
+  def attribute_names
     ATTRIBUTES
   end
 end

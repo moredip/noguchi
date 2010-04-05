@@ -8,7 +8,7 @@ module Noguchi
         UserModel.new( 'Mike', 25, 178.5 )
       ]
 
-      table = ModelTable.for( data )
+      table = SimpleTable.for( data )
 
       table.render_as_csv.should == <<-EOS.chomp
 name,age,weight
