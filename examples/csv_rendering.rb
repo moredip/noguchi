@@ -14,6 +14,6 @@ users = [
   User.new( 3, "Hank", 27, :M )
 ]
 
-table = Noguchi::SimpleTable.for(users)
+table = Noguchi.table_for(users)
 
 puts table.render_as_csv

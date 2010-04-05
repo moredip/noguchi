@@ -22,7 +22,7 @@ users = [
   User.new( 3, "Hank", 27, :M )
 ]
 
-table = Noguchi::SimpleTable.for(users)
+table = Noguchi.table_for(users)
 table.add_field(:edit)
 table.to_render_body_cell_for(:edit) do |context,cell|
   cell.raw_content = link_to( "Edit this user", edit_user_path(context.datum) )
