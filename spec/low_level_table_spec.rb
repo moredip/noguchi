@@ -1,6 +1,6 @@
 require File.dirname(__FILE__)+'/spec_helper.rb'
 
-require 'low_level_table'
+require 'noguchi/low_level_table'
 
 module Noguchi
   describe LowLevelTable do

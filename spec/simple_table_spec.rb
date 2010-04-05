@@ -1,5 +1,5 @@
 require File.dirname(__FILE__)+'/spec_helper.rb'
-require 'simple_table'
+require 'noguchi/simple_table'
 
 module Noguchi
 

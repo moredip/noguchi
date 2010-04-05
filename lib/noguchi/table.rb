@@ -1,7 +1,7 @@
 require 'builder'
 
-require File.join File.dirname(__FILE__), 'cell_output'
-require File.join File.dirname(__FILE__), 'cell_data_context'
+require 'noguchi/cell_output'
+require 'noguchi/cell_data_context'
 
 module Noguchi
 class Table

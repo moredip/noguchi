@@ -1,7 +1,7 @@
 require File.dirname(__FILE__)+'/spec_helper.rb'
 require 'builder'
 
-require 'cell_output'
+require 'noguchi/cell_output'
 
 module Noguchi
 describe CellOutput do

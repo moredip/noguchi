@@ -1,3 +1,4 @@
+module Noguchi
 class LowLevelTable
   attr_writer :data
 
@@ -65,4 +66,5 @@ class CellRenderProxy
       @builder << content
     }
   end
+end
 end
